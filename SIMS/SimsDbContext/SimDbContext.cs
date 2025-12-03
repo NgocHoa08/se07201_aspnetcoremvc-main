@@ -8,26 +8,36 @@ namespace SIMS.SimsDbContext
     {
         public SimDbContext(DbContextOptions<SimDbContext> options) : base(options) { }
 
-        // DbSet cho Users (đã có)
+        // DbSet cho Users
         public DbSet<Users> User { get; set; }
 
-        // DbSet cho Courses (thêm mới)
+        // DbSet cho Courses
         public DbSet<Course> Courses { get; set; }
 
-        // DbSet cho Students (thêm mới)
+        // DbSet cho Students
         public DbSet<Student> Students { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Cấu hình cho Users (giữ nguyên)
-            modelBuilder.Entity<Users>().ToTable("Users");
-            modelBuilder.Entity<Users>().HasKey("Id");
-            modelBuilder.Entity<Users>().HasIndex("Username").IsUnique();
-            modelBuilder.Entity<Users>().HasIndex("Email").IsUnique();
-            modelBuilder.Entity<Users>().Property(u => u.Status).HasDefaultValue("Active");
-            modelBuilder.Entity<Users>().Property(u => u.Role).HasDefaultValue("Admin");
+            // Cấu hình cho Users
+            modelBuilder.Entity<Users>(entity =>
+            {
+                entity.ToTable("Users");
+                entity.HasKey(u => u.Id);
+                entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
+                entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
+                entity.Property(u => u.Password).IsRequired().HasMaxLength(255);
+                entity.Property(u => u.FullName).HasMaxLength(100);
+                entity.Property(u => u.PhoneNumber).HasMaxLength(20);
+                entity.Property(u => u.Role).HasMaxLength(50).HasDefaultValue("User");
+                entity.Property(u => u.Status).HasMaxLength(20).HasDefaultValue("Active");
+                entity.Property(u => u.CreatedDate).HasDefaultValueSql("GETDATE()");
 
-            // Cấu hình cho Courses (thêm mới)
+                entity.HasIndex(u => u.Username).IsUnique();
+                entity.HasIndex(u => u.Email).IsUnique();
+            });
+
+            // Cấu hình cho Courses
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.ToTable("Courses");
@@ -40,11 +50,10 @@ namespace SIMS.SimsDbContext
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
                 entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
 
-                // Index cho CourseCode để tìm kiếm nhanh và đảm bảo unique
                 entity.HasIndex(e => e.CourseCode).IsUnique();
             });
 
-            // Cấu hình cho Students (thêm mới)
+            // Cấu hình cho Students
             modelBuilder.Entity<Student>(entity =>
             {
                 entity.ToTable("Students");
@@ -60,7 +69,6 @@ namespace SIMS.SimsDbContext
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
                 entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
 
-                // Index cho StudentCode và Email để tìm kiếm nhanh và đảm bảo unique
                 entity.HasIndex(e => e.StudentCode).IsUnique();
                 entity.HasIndex(e => e.Email).IsUnique();
             });

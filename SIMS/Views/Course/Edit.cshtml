@@ -4,67 +4,86 @@
     ViewData["Title"] = "Edit Course";
 }
 
-<div class="container mt-4">
+<div class="container-fluid px-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-warning text-dark">
-                    <h4 class="mb-0">Edit Course</h4>
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow-lg border-0 mt-4 mb-5">
+                <div class="card-header bg-gradient-warning text-dark py-4">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Edit Course
+                    </h4>
+                    <small>Update course information</small>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="CourseId" />
                         <input type="hidden" asp-for="CreatedDate" />
 
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                        <div class="row mb-3">
+                        <div class="row mb-4">
                             <div class="col-md-6">
-                                <label asp-for="CourseCode" class="form-label">Course Code <span class="text-danger">*</span></label>
-                                <input asp-for="CourseCode" class="form-control" readonly />
-                                <small class="text-muted">Course code cannot be changed</small>
-                                <span asp-validation-for="CourseCode" class="text-danger"></span>
+                                <label asp-for="CourseCode" class="form-label fw-bold">
+                                    <i class="fas fa-barcode me-1"></i>Course Code <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="CourseCode" class="form-control form-control-lg" readonly
+                                       style="background-color: #e9ecef;" />
+                                <small class="text-muted">
+                                    <i class="fas fa-lock me-1"></i>Course code cannot be changed
+                                </small>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Credits" class="form-label">Credits <span class="text-danger">*</span></label>
-                                <input asp-for="Credits" type="number" class="form-control" min="1" max="10" />
-                                <span asp-validation-for="Credits" class="text-danger"></span>
+                                <label asp-for="Credits" class="form-label fw-bold">
+                                    <i class="fas fa-star me-1"></i>Credits <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Credits" type="number" class="form-control form-control-lg"
+                                       min="1" max="10" />
+                                <span asp-validation-for="Credits" class="text-danger small"></span>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="CourseName" class="form-label">Course Name <span class="text-danger">*</span></label>
-                            <input asp-for="CourseName" class="form-control" />
-                            <span asp-validation-for="CourseName" class="text-danger"></span>
+                        <div class="mb-4">
+                            <label asp-for="CourseName" class="form-label fw-bold">
+                                <i class="fas fa-book me-1"></i>Course Name <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="CourseName" class="form-control form-control-lg" />
+                            <span asp-validation-for="CourseName" class="text-danger small"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Instructor" class="form-label">Instructor</label>
-                            <input asp-for="Instructor" class="form-control" />
-                            <span asp-validation-for="Instructor" class="text-danger"></span>
+                        <div class="mb-4">
+                            <label asp-for="Instructor" class="form-label fw-bold">
+                                <i class="fas fa-chalkboard-teacher me-1"></i>Instructor
+                            </label>
+                            <input asp-for="Instructor" class="form-control form-control-lg" />
+                            <span asp-validation-for="Instructor" class="text-danger small"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Description</label>
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-bold">
+                                <i class="fas fa-align-left me-1"></i>Description
+                            </label>
                             <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
-                                <label asp-for="IsActive" class="form-check-label">
-                                    Active Status
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+                                <label asp-for="IsActive" class="form-check-label fw-bold">
+                                    <i class="fas fa-toggle-on me-1"></i>Active Status
                                 </label>
                             </div>
                         </div>
 
+                        <hr class="my-4">
+
                         <div class="d-flex justify-content-end gap-2">
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Cancel
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancel
                             </a>
-                            <button type="submit" class="btn btn-warning">
-                                <i class="fas fa-save"></i> Update Course
+                            <button type="submit" class="btn btn-warning btn-lg text-dark">
+                                <i class="fas fa-save me-2"></i>Update Course
                             </button>
                         </div>
                     </form>
@@ -73,6 +92,29 @@
         </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        }
+
+        .form-control:focus {
+            border-color: #ffc107;
+            box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            border: none;
+        }
+
+            .btn-warning:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+            }
+    </style>
+}
 
 @section Scripts {
     @{

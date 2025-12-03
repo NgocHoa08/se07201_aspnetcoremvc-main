@@ -45,7 +45,8 @@ namespace SIMS.Controllers
                     {
                         new Claim(ClaimTypes.Name, userInfo.Username),
                         new Claim(ClaimTypes.Role, userInfo.Role),
-                        new Claim(ClaimTypes.Email, userInfo.Email ?? "")
+                        new Claim(ClaimTypes.Email, userInfo.Email ?? ""),
+                        new Claim("FullName", userInfo.FullName ?? "")
                     };
 
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -106,7 +107,7 @@ namespace SIMS.Controllers
         }
 
         // POST: Logout
-        [Authorize(Roles = "Administrator, User, Manager, Staff")]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

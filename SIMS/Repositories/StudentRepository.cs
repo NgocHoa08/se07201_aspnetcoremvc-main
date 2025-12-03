@@ -98,7 +98,7 @@ namespace SIMS.Repositories
                 .Where(s => s.StudentCode.Contains(searchTerm) ||
                            s.FullName.Contains(searchTerm) ||
                            s.Email.Contains(searchTerm) ||
-                           s.Major.Contains(searchTerm))
+                           (s.Major != null && s.Major.Contains(searchTerm)))
                 .OrderByDescending(s => s.CreatedDate)
                 .ToListAsync();
         }
