@@ -1,0 +1,300 @@
+﻿@model IEnumerable<SIMS.SimsDbContext.Entities.Users>
+
+@{
+    ViewData["Title"] = "User Accounts";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <div>
+            <h1 class="mb-0"><i class="fas fa-users-cog me-2"></i>User Management</h1>
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active">Accounts</li>
+            </ol>
+        </div>
+        <a asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+            <i class="fas fa-user-plus me-2"></i>Add New User
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-3 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs fw-bold text-uppercase mb-1">Total Users</div>
+                            <div class="h4 mb-0">@(Model?.Count() ?? 0)</div>
+                        </div>
+                        <div class="text-white-50">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-3 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs fw-bold text-uppercase mb-1">Administrators</div>
+                            <div class="h4 mb-0">@(Model?.Count(u => u.Role == "Administrator") ?? 0)</div>
+                        </div>
+                        <div class="text-white-50">
+                            <i class="fas fa-user-shield fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-dark mb-3 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs fw-bold text-uppercase mb-1">Managers</div>
+                            <div class="h4 mb-0">@(Model?.Count(u => u.Role == "Manager") ?? 0)</div>
+                        </div>
+                        <div class="text-white-50">
+                            <i class="fas fa-user-tie fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-3 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs fw-bold text-uppercase mb-1">Active Users</div>
+                            <div class="h4 mb-0">@(Model?.Count(u => u.Status == "Active") ?? 0)</div>
+                        </div>
+                        <div class="text-white-50">
+                            <i class="fas fa-user-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-lg border-0 mb-4">
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>User List</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0" id="accountsTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th class="text-center">Role</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Created Date</th>
+                            <th class="text-center" style="width: 200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            int index = 1;
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td class="text-center fw-bold">@index</td>
+                                    <td>
+                                        <i class="fas fa-user-circle me-1"></i>
+                                        <strong>@user.Username</strong>
+                                    </td>
+                                    <td>@(user.FullName ?? "-")</td>
+                                    <td>
+                                        <small>
+                                            <i class="far fa-envelope me-1"></i>@user.Email
+                                        </small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(user.PhoneNumber))
+                                        {
+                                            <small><i class="fas fa-phone me-1"></i>@user.PhoneNumber</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (user.Role == "Administrator")
+                                        {
+                                            <span class="badge bg-danger px-3 py-2">
+                                                <i class="fas fa-user-shield me-1"></i>@user.Role
+                                            </span>
+                                        }
+                                        else if (user.Role == "Manager")
+                                        {
+                                            <span class="badge bg-warning text-dark px-3 py-2">
+                                                <i class="fas fa-user-tie me-1"></i>@user.Role
+                                            </span>
+                                        }
+                                        else if (user.Role == "Staff")
+                                        {
+                                            <span class="badge bg-info px-3 py-2">
+                                                <i class="fas fa-user-cog me-1"></i>@user.Role
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-primary px-3 py-2">
+                                                <i class="fas fa-user me-1"></i>@user.Role
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (user.Status == "Active")
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-times-circle me-1"></i>@user.Status
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <small class="text-muted">@user.CreatedDate.ToString("dd/MM/yyyy")</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@user.Id"
+                                               class="btn btn-sm btn-info text-white" title="Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@user.Id"
+                                               class="btn btn-sm btn-warning text-white" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@user.Id"
+                                               class="btn btn-sm btn-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center py-5">
+                                    <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted mb-0">No users found</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                    Total: <strong>@(Model?.Count() ?? 0)</strong> users
+                </small>
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>Last updated: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .table tbody tr {
+            transition: all 0.3s;
+        }
+
+            .table tbody tr:hover {
+                background-color: #f8f9fa;
+                transform: scale(1.01);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+
+        .btn-group .btn {
+            transition: all 0.3s;
+        }
+
+            .btn-group .btn:hover {
+                transform: translateY(-2px);
+            }
+
+        .card.bg-primary:hover,
+        .card.bg-danger:hover,
+        .card.bg-warning:hover,
+        .card.bg-success:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#accountsTable').DataTable({
+                "pageLength": 10,
+                "ordering": true,
+                "searching": true,
+                "language": {
+                    "search": "Search users:",
+                    "lengthMenu": "Show _MENU_ users per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ users",
+                    "paginate": {
+                        "previous": "<i class='fas fa-chevron-left'></i>",
+                        "next": "<i class='fas fa-chevron-right'></i>"
+                    }
+                }
+            });
+
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+        });
+    </script>
+}

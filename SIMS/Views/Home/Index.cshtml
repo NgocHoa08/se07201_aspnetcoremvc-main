@@ -1,8 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewData["Title"] = "Dashboard page";
+    ViewData["breadcrumb"] = "Dashboard";
+    ViewData["breadcrumb-item"] = "dashboard";
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+}
+<div class="row">
+    <div class="col col-sm-12 col-md-12 col-lg-12">
+        <h3> This is dashboard page</h3>
+    </div>
 </div>

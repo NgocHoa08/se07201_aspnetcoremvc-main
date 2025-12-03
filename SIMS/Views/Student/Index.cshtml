@@ -1,120 +1,178 @@
 ﻿@model IEnumerable<SIMS.Models.Student>
 
 @{
-    ViewData["Title"] = "List of Students";
+    ViewData["Title"] = "Students";
 }
 
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center">
-            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary me-3">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <h2 class="mb-0">List of Students</h2>
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <div>
+            <h1 class="mb-0"><i class="fas fa-user-graduate me-2"></i>Student Management</h1>
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active">Students</li>
+            </ol>
         </div>
-
         @if (User.IsInRole("Administrator"))
         {
-            <a asp-action="Add" class="btn btn-primary">
-                <i class="fas fa-user-plus"></i> Add New Student
+            <a asp-action="Add" class="btn btn-success btn-lg shadow-sm">
+                <i class="fas fa-user-plus me-2"></i>Add New Student
             </a>
         }
     </div>
 
-
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["ErrorMessage"]
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <!-- Search Form -->
-    <div class="card mb-3">
+    <!-- Search Box -->
+    <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <form asp-action="Index" method="get" class="row g-3">
                 <div class="col-md-10">
-                    <input type="text" name="searchTerm" class="form-control"
-                           placeholder="Search by student code, name, email, or major..."
-                           value="@ViewData["SearchTerm"]" />
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-light">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="searchTerm" class="form-control"
+                               placeholder="Search by student code, name, email, or major..."
+                               value="@ViewData["SearchTerm"]" />
+                    </div>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search"></i> Search
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-search me-2"></i>Search
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body">
+    <div class="card shadow-lg border-0 mb-4">
+        <div class="card-header bg-gradient-success text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Student List</h5>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-striped">
+                <table class="table table-hover table-striped mb-0" id="studentsTable">
                     <thead class="table-dark">
                         <tr>
+                            <th class="text-center">#</th>
                             <th>Student Code</th>
                             <th>Full Name</th>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Major</th>
-                            <th>Year</th>
-                            <th>GPA</th>
-                            <th>Status</th>
-                            <th style="width: 180px;">Actions</th>
+                            <th class="text-center">Year</th>
+                            @* Chỉ hiển thị cột GPA nếu KHÔNG phải User role *@
+                            @if (ViewBag.HideGPAInList != true)
+                            {
+                                <th class="text-center">GPA</th>
+                            }
+                            <th class="text-center">Status</th>
+                            <th class="text-center" style="width: 200px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (Model != null && Model.Any())
                         {
+                            int index = 1;
                             @foreach (var student in Model)
                             {
                                 <tr>
-                                    <td><strong>@student.StudentCode</strong></td>
-                                    <td>@student.FullName</td>
-                                    <td>@student.Email</td>
-                                    <td>@student.Phone</td>
-                                    <td>@student.Major</td>
-                                    <td>@student.EnrollmentYear</td>
+                                    <td class="text-center fw-bold">@index</td>
                                     <td>
-                                        @if (student.GPA.HasValue)
+                                        <span class="badge bg-success px-3 py-2">@student.StudentCode</span>
+                                    </td>
+                                    <td class="fw-semibold">
+                                        <i class="fas fa-user me-1"></i>@student.FullName
+                                    </td>
+                                    <td>
+                                        <small><i class="far fa-envelope me-1"></i>@student.Email</small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(student.Phone))
                                         {
-                                            <span class="badge bg-info">@student.GPA.Value.ToString("F2")</span>
+                                            <small><i class="fas fa-phone me-1"></i>@student.Phone</small>
                                         }
                                         else
                                         {
-                                            <span class="text-muted">N/A</span>
+                                            <span class="text-muted">-</span>
                                         }
                                     </td>
                                     <td>
+                                        @if (!string.IsNullOrEmpty(student.Major))
+                                        {
+                                            <span class="badge bg-info text-dark">@student.Major</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (student.EnrollmentYear.HasValue)
+                                        {
+                                            <span class="badge bg-secondary">@student.EnrollmentYear</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    @* Chỉ hiển thị GPA nếu KHÔNG phải User role *@
+                                    @if (ViewBag.HideGPAInList != true)
+                                    {
+                                        <td class="text-center">
+                                            @if (student.GPA.HasValue)
+                                            {
+                                                var gpaClass = student.GPA.Value >= 3.5m ? "success" :
+                                                student.GPA.Value >= 2.5m ? "info" :
+                                                student.GPA.Value >= 2.0m ? "warning" : "danger";
+                                                <span class="badge bg-@gpaClass">@student.GPA.Value.ToString("F2")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                    }
+                                    <td class="text-center">
                                         @if (student.IsActive)
                                         {
-                                            <span class="badge bg-success">Active</span>
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Active
+                                            </span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-secondary">Inactive</span>
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-times-circle me-1"></i>Inactive
+                                            </span>
                                         }
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <div class="btn-group" role="group">
                                             <a asp-action="Details" asp-route-id="@student.StudentId"
-                                               class="btn btn-sm btn-info" title="Details">
+                                               class="btn btn-sm btn-info text-white" title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             @if (User.IsInRole("Administrator"))
                                             {
                                                 <a asp-action="Edit" asp-route-id="@student.StudentId"
-                                                   class="btn btn-sm btn-warning" title="Edit">
+                                                   class="btn btn-sm btn-warning text-white" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <a asp-action="Delete" asp-route-id="@student.StudentId"
@@ -125,20 +183,24 @@
                                         </div>
                                     </td>
                                 </tr>
+                                index++;
                             }
                         }
                         else
                         {
                             <tr>
-                                <td colspan="9" class="text-center">
-                                    @if (ViewData["SearchTerm"] != null)
-                                    {
-                                        <span>No students found matching your search.</span>
-                                    }
-                                    else
-                                    {
-                                        <span>No students found</span>
-                                    }
+                                <td colspan="@(ViewBag.HideGPAInList == true ? "9" : "10")" class="text-center py-5">
+                                    <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted mb-0">
+                                        @if (ViewData["SearchTerm"] != null)
+                                        {
+                                            <text>No students found matching your search</text>
+                                        }
+                                        else
+                                        {
+                                            <text>No students found</text>
+                                        }
+                                    </p>
                                 </td>
                             </tr>
                         }
@@ -146,14 +208,73 @@
                 </table>
             </div>
         </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                    Total: <strong>@(Model?.Count() ?? 0)</strong> students
+                </small>
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>Last updated: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                </small>
+            </div>
+        </div>
     </div>
 </div>
 
+@section Styles {
+    <style>
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .table tbody tr {
+            transition: all 0.3s;
+        }
+
+            .table tbody tr:hover {
+                background-color: #f8f9fa;
+                transform: scale(1.01);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+
+        .btn-group .btn {
+            transition: all 0.3s;
+        }
+
+            .btn-group .btn:hover {
+                transform: translateY(-2px);
+            }
+
+        .input-group:focus-within {
+            box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+            border-radius: 0.5rem;
+        }
+    </style>
+}
+
 @section Scripts {
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script>
-        // Auto hide alerts after 3 seconds
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 3000);
+        $(document).ready(function() {
+            $('#studentsTable').DataTable({
+                "pageLength": 10,
+                "ordering": true,
+                "searching": true,
+                "language": {
+                    "search": "Search students:",
+                    "lengthMenu": "Show _MENU_ students per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ students",
+                    "paginate": {
+                        "previous": "<i class='fas fa-chevron-left'></i>",
+                        "next": "<i class='fas fa-chevron-right'></i>"
+                    }
+                }
+            });
+
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+        });
     </script>
 }

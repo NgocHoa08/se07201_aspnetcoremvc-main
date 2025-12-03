@@ -22,6 +22,7 @@ namespace SIMS.Models
         [Required(ErrorMessage = "Email is required")]
         [StringLength(100)]
         [EmailAddress(ErrorMessage = "Invalid email format")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
         [StringLength(20)]
@@ -34,9 +35,11 @@ namespace SIMS.Models
         public DateTime? DateOfBirth { get; set; }
 
         [StringLength(10)]
+        [Display(Name = "Gender")]
         public string Gender { get; set; }
 
         [StringLength(200)]
+        [Display(Name = "Address")]
         public string Address { get; set; }
 
         [StringLength(50)]
@@ -61,6 +64,7 @@ namespace SIMS.Models
         public DateTime? UpdatedDate { get; set; }
 
         [StringLength(500)]
+        [Display(Name = "Notes")]
         public string Notes { get; set; }
     }
 }
